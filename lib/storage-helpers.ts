@@ -1,50 +1,47 @@
-// Helper functions for local storage
 
-export function setItem(key: string, value: any): void {
+
+
+// import { supabase } from "@/utils/supabase/client";
+
+// /**
+//  * Upload a file to a bucket path.
+//  * Returns { error, data } - data contains file metadata.
+//  */
+// export async function uploadFile(bucket: string, path: string, file: File) {
+//   const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
+//     cacheControl: "3600",
+//     upsert: false, // change to true if you want to overwrite existing files
+//   });
+//   return { data, error };
+// }
+
+// /**
+//  * Get public URL for a file in a public bucket.
+//  * Returns { publicUrl, error }
+//  */
+// export function getPublicUrl(bucket: string, path: string) {
+//   const { data, error } = supabase.storage.from(bucket).getPublicUrl(path);
+//   return { publicUrl: data?.publicUrl ?? null, error };
+// }
+
+
+
+// Save login state in localStorage
+export function setAuthenticated(p0: string, isAuth: boolean) {
   if (typeof window !== "undefined") {
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem("isAuthenticated", isAuth ? "true" : "false");
   }
 }
 
-export function getItem<T>(key: string): T | null {
-  if (typeof window !== "undefined") {
-    const item = localStorage.getItem(key)
-    if (item) {
-      try {
-        return JSON.parse(item) as T
-      } catch (e) {
-        console.error("Error parsing item from localStorage:", e)
-        return null
-      }
-    }
-  }
-  return null
+// Check login state
+export function isAuthenticated(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem("isAuthenticated") === "true";
 }
 
-export function setLocalStorage(key: string, value: any): void {
+// Clear login state
+export function clearAuth() {
   if (typeof window !== "undefined") {
-    localStorage.setItem(key, JSON.stringify(value))
-  }
-}
-
-export function getLocalStorage(key: string): any {
-  if (typeof window !== "undefined") {
-    const item = localStorage.getItem(key)
-    if (item) {
-      try {
-        return JSON.parse(item)
-      } catch (e) {
-        // If parsing fails, return the raw string
-        return item
-      }
-    }
-  }
-  return null
-}
-
-export function setAuthenticated(role: string, isAuthenticated: boolean): void {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("isAuthenticated", JSON.stringify(isAuthenticated))
-    localStorage.setItem("userRole", JSON.stringify(role))
+    localStorage.removeItem("isAuthenticated");
   }
 }

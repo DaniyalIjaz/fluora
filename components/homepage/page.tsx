@@ -15,7 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { createClient } from "@/utils/supabase/client";
+// import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -35,21 +35,21 @@ export default function Homepage(): JSX.Element {
     setLoading(true);
     setSuccess(false);
 
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.from("users").insert([{ email }]);
+    // try {
+    //   const supabase = createClient();
+    //   const { error } = await supabase.from("users").insert([{ email }]);
 
-      if (error) {
-        console.error("Error saving email:", error.message);
-      } else {
-        setSuccess(true);
-        setEmail("");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    //   if (error) {
+    //     console.error("Error saving email:", error.message);
+    //   } else {
+    //     setSuccess(true);
+    //     setEmail("");
+    //   }
+    // } catch (err) {
+    //   console.error(err);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const handleAnimationComplete = () => {
