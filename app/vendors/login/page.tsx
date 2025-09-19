@@ -1,3 +1,7 @@
+
+
+
+
 "use client";
 
 import { supabase } from "@/utils/supabase/client";
@@ -5,31 +9,36 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
+import { Eye, EyeOff } from "lucide-react"; // 👁️ icons
 import "react-toastify/dist/ReactToastify.css";
 
 export default function VendorLogin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // --- LOGIN ---
   const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast.error("Login failed: " + error.message);
     } else {
       toast.success("Login successful 🎉");
-      setTimeout(() => router.push("/vendor/profile"), 1200);
+      setTimeout(() => router.push("/vendors/profile"), 1200);
     }
     setLoading(false);
   };
 
   // --- REDIRECT TO REGISTER ---
-  const goToSignup = () => {
-    router.push("/vendors/register");
-  };
+  const goToSignup = () => router.push("/vendors/register");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#021526] to-[#03346E] text-white p-4">
@@ -41,7 +50,6 @@ export default function VendorLogin() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-8"
       >
-        {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,7 +59,7 @@ export default function VendorLogin() {
           Vendor Portal
         </motion.h1>
 
-        {/* Input fields */}
+        {/* Email */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -66,18 +74,27 @@ export default function VendorLogin() {
           />
         </motion.div>
 
+        {/* Password with toggle */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
+          className="relative mb-4"
         >
           <input
             placeholder="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mb-4 w-full p-3 rounded-lg text-white bg-white/20 placeholder-gray-200 focus:outline-none focus:ring-1 focus:ring-white"
+            className="w-full p-3 rounded-lg text-white bg-white/20 placeholder-gray-200 focus:outline-none focus:ring-1 focus:ring-white pr-12"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-200 hover:text-white"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
         </motion.div>
 
         {/* Buttons */}
@@ -90,7 +107,7 @@ export default function VendorLogin() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="bg-white hover:bg-gray-200 cursor-pointer text-black transition-colors px-4 py-3 rounded-lg font-semibold shadow-md"
+            className="bg-white hover:bg-gray-200 text-black transition-colors px-4 py-3 rounded-lg font-semibold shadow-md"
           >
             {loading ? "Please wait..." : "Login"}
           </button>

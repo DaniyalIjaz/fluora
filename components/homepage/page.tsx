@@ -139,7 +139,7 @@ export default function Homepage(): JSX.Element {
                   asChild
                   className="h-12 border border-[#0552A1] hover:bg-[#03346E]/20 text-[#03346E] px-6 sm:flex-1"
                 >
-                  <a href="/vendors">I'm a Vendor</a>
+                  <a href="/vendors/login">I'm a Vendor</a>
                 </Button>
               </div>
             </motion.div>
