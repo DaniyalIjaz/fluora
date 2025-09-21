@@ -165,9 +165,9 @@ export default function VendorRegistration() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={goBack}
-                className="text-white/80 hover:text-white flex items-center gap-2"
+                className="text-white/80 hover:text-white flex items-center gap-2 cursor-pointer"
               >
-                <ArrowLeft className="w-5 h-5" /> Back
+                <ArrowLeft className="w-5 h-5 cursor-pointer" /> Back
               </motion.button>
             )}
             <h2 className="text-xl font-semibold text-white">
@@ -336,16 +336,16 @@ export default function VendorRegistration() {
             {/* Step 3: Pricing */}
             {step === 3 && (
               <>
-                <label className="text-sm text-white/80 mb-2">Fixed Price Per Day ($)</label>
-                <motion.div className="w-full">
+                <label className="text-sm text-white/80 mb-2">Fixed Price Per Day (Rs)</label>
+                <motion.div className="w-full ">
                   <input
                     type="range"
-                    min={0}
-                    max={5000}
+                    min={10000}
+                    max={1000000}
                     step={50}
                     value={draft.fixedPricePerDay}
                     onChange={(e) => update({ fixedPricePerDay: Number(e.target.value) })}
-                    className="w-full"
+                    className="w-full cursor-pointer accent-[#000000] h-2 rounded-lg"
                   />
                   <motion.div
                     initial={{ scale: 1 }}
@@ -353,7 +353,7 @@ export default function VendorRegistration() {
                     transition={{ duration: 0.2 }}
                     className="text-white mt-2 font-bold text-xl text-center"
                   >
-                    ${draft.fixedPricePerDay}
+                    {draft.fixedPricePerDay} Rupees
                   </motion.div>
                 </motion.div>
               </>
@@ -371,7 +371,7 @@ export default function VendorRegistration() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={goNext}
-                  className="px-5 py-2 rounded-md bg-gradient-to-r from-[#021526] via-[#0552A1] to-[#03346E] text-white font-medium"
+                  className="px-5 py-2 rounded-md bg-white text-black font-medium cursor-pointer"
                 >
                   Next
                 </motion.button>
@@ -380,7 +380,7 @@ export default function VendorRegistration() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSubmit}
-                  className="px-5 py-2 rounded-md bg-green-600 text-white font-medium hover:bg-green-700"
+                  className="px-5 py-2 rounded-md bg-white text-black font-medium  cursor-pointer"
                 >
                   Submit
                 </motion.button>

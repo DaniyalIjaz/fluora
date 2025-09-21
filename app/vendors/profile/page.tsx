@@ -3,7 +3,7 @@
 import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { motion, MotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 import { User, Phone, Briefcase, MapPin, DollarSign, Mail } from "lucide-react";
 
 type VendorProfile = {
@@ -27,26 +27,21 @@ export default function VendorProfile() {
 
   useEffect(() => {
     const fetchVendor = async () => {
-      try {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) {
-          router.push("/vendors/login");
-          return;
-        }
-        const userId = userData.user.id;
-
-        const { data, error } = await supabase
-          .from("vendors")
-          .select("*")
-          .eq("id", userId)
-          .single();
-
-        if (!error) setVendor(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        router.push("/vendors/login");
+        return;
       }
+
+      const userId = userData.user.id;
+      const { data, error } = await supabase
+        .from("vendors")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (!error) setVendor(data);
+      setLoading(false);
     };
 
     fetchVendor();
@@ -54,14 +49,14 @@ export default function VendorProfile() {
 
   if (loading)
     return (
-      <div className="text-white text-center mt-20 text-xl animate-pulse">
+      <div className="min-h-screen flex items-center justify-center text-white text-xl animate-pulse">
         Loading vendor profile...
       </div>
     );
 
   if (!vendor)
     return (
-      <div className="text-white text-center mt-20 text-xl">
+      <div className="min-h-screen flex items-center justify-center text-white text-xl">
         Vendor profile not found.
       </div>
     );
@@ -73,75 +68,59 @@ export default function VendorProfile() {
     : [];
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#021526] via-[#03346E] to-[#021526] flex justify-center items-start py-10 px-4">
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#021526] via-[#03346E] to-[#021526] flex justify-center py-40 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-5xl bg-white/10 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-white/20 text-white flex flex-col gap-8"
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-white/20 text-white flex flex-col gap-8"
       >
         {/* Header */}
-        <motion.h1
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="text-5xl font-bold mb-6 flex items-center gap-3"
-        >
-          <User size={40} /> {vendor.name}
-        </motion.h1>
+        <h1 className="text-4xl font-bold mb-6 flex items-center gap-3">
+          <User size={36} /> {vendor.name}
+        </h1>
 
         {/* Contact & Basic Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 bg-white/20 rounded-xl p-4 transition-all">
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl p-4">
             <Mail /> <span><strong>Email:</strong> {vendor.email}</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 bg-white/20 rounded-xl p-4 transition-all">
+          </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl p-4">
             <Phone /> <span><strong>Phone:</strong> {vendor.phone || "N/A"}</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 bg-white/20 rounded-xl p-4 transition-all">
+          </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl p-4">
             <Briefcase /> <span><strong>Company:</strong> {vendor.company || "N/A"}</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 bg-white/20 rounded-xl p-4 transition-all">
+          </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl p-4">
             <MapPin /> <span><strong>Location:</strong> {[vendor.city, vendor.state, vendor.country].filter(Boolean).join(", ") || "N/A"}</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 bg-white/20 rounded-xl p-4 transition-all">
-            <DollarSign /> <span><strong>Fixed Price / Day:</strong> ${vendor.fixed_price_per_day || 0}</span>
-          </motion.div>
+          </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-xl p-4">
+            <span className="font-semibold text-xl">Rs.</span> <span><strong>Fixed Price / Day:</strong> {vendor.fixed_price_per_day || 0} Rupees</span>
+          </div>
         </div>
 
         {/* Bio Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="bg-white/20 rounded-xl p-6"
-        >
+        <div className="bg-white/20 rounded-xl p-6">
           <h2 className="text-2xl font-semibold mb-4">Bio</h2>
           <p className="whitespace-pre-wrap text-gray-200">{vendor.bio || "No bio provided."}</p>
-        </motion.div>
+        </div>
 
         {/* Services Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="bg-white/20 rounded-xl p-6"
-        >
+        <div className="bg-white/20 rounded-xl p-6">
           <h2 className="text-2xl font-semibold mb-4">Services Offered</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="flex flex-wrap gap-3">
             {servicesList.length
-              ? servicesList.map((s: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | MotionValue<number> | MotionValue<string> | null | undefined, i: Key | null | undefined) => (
-                  <motion.span
+              ? servicesList.map((s: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, i: Key | null | undefined) => (
+                  <span
                     key={i}
-                    whileHover={{ scale: 1.1 }}
-                    className="px-4 py-2 bg-gradient-to-r from-[#021526] via-[#0552A1] to-[#03346E] rounded-full text-white text-center font-medium cursor-pointer transition-all duration-200"
+                    className="px-4 py-2 bg-white text-black rounded-full text-center font-medium"
                   >
                     {s}
-                  </motion.span>
+                  </span>
                 ))
               : <span className="text-gray-200">No services listed.</span>}
           </div>
-        </motion.div>
+        </div>
       </motion.div>
     </div>
   );

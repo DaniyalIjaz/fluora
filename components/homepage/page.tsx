@@ -122,7 +122,7 @@ export default function Homepage(): JSX.Element {
 
                 <Button
                   asChild
-                  className="h-12 border border-[#0552A1] hover:bg-[#03346E]/20 text-[#03346E] px-6 sm:flex-1"
+                  className="h-12 border border-[#0552A1] bg-white hover:bg-[#03346E]/20 text-[#03346E] px-6 sm:flex-1"
                 >
                   <a href="/vendors/login">I'm a Vendor</a>
                 </Button>
@@ -377,12 +377,12 @@ export default function Homepage(): JSX.Element {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setEmail(e.target.value)
               }
-              className="h-12 w-full border-0 focus-visible:ring-0"
+              className="h-12 w-full border-0 focus-visible:ring-0 text-black"
             />
             <Button
               type="submit"
               disabled={loading}
-              className="h-12 bg-[#03346E] hover:bg-[#0552A1] text-white px-6"
+              className="h-12 bg-[#03346E] hover:bg-[#0552A1] text-white px-6 cursor-pointer"
             >
               {loading ? "Saving..." : "Get Early Access"}
               <ArrowRight className="ml-2 h-4 w-4" />

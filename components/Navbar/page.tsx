@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "../../utils/supabase/client";
+import toast from "react-hot-toast";
 
 const navItems = [
   { label: "Events", href: "/events" },
-  { label: "Vendors", href: "/vendors" },
+  // Vendors will now show conditionally (not here by default)
 ];
 
 const headlines = [
@@ -29,8 +31,10 @@ export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [host, setHost] = useState<any>(null);
 
   const pathname = usePathname();
+  const router = useRouter();
 
   // Rotate headlines
   useEffect(() => {
@@ -45,9 +49,9 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY) {
-        setShowNav(false); // scrolling down
+        setShowNav(false);
       } else {
-        setShowNav(true); // scrolling up
+        setShowNav(true);
       }
       setLastScrollY(window.scrollY);
     };
@@ -55,6 +59,45 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  // Check if host is logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.user) {
+        setHost(session.user);
+        toast.success("Welcome back!");
+      } else {
+        setHost(null);
+      }
+    };
+
+    checkSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setHost(session.user);
+        toast.success("Login successful");
+      } else {
+        setHost(null);
+        toast("You are logged out");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Logout handler
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setHost(null);
+    toast.success("Host logged out successfully");
+    router.push("/");
+  };
 
   return (
     <motion.div
@@ -94,46 +137,62 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-screen-2xl items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="relative">
-                <Image
-                  src="/images/logo.png"
-                  alt="Logo"
-                  width={150}
-                  height={10}
-                  priority
-                  className="object-contain cursor-pointer"
-                />
-              </div>
+              <Image
+                src="/images/logo.png"
+                alt="Logo"
+                width={150}
+                height={10}
+                priority
+                className="object-contain cursor-pointer"
+              />
             </Link>
 
             {/* Desktop Nav */}
             <ul className="hidden items-center space-x-8 md:flex">
-              {navItems.map(({ label, href }) => {
-                const isActive = pathname === href;
-                return (
-                  <li key={href} className="list-none relative">
-                    <Link href={href} className="relative inline-block px-1">
-                      <motion.span
-                        initial={false}
-                        animate={{
-                          color: isActive ? "#6140FE" : "#fff",
-                        }}
-                        whileHover={{ y: -2 }}
-                        transition={{
-                          duration: 0.4,
-                          ease: "easeInOut",
-                          type: "spring",
-                          stiffness: 250,
-                          damping: 20,
-                        }}
-                        className="text-lg inline-block cursor-pointer transition-colors duration-300"
-                      >
-                        {label}
-                      </motion.span>
+              {/* Always show Events */}
+              <li>
+                <Link href="/events" className="text-lg text-white">
+                  Events
+                </Link>
+              </li>
+
+              {/* Show Vendors only if host is logged in */}
+              {host && (
+                <li>
+                  <Link href="/vendors" className="text-lg text-white">
+                    Vendors
+                  </Link>
+                </li>
+              )}
+
+              {/* If logged in -> Dashboard + Logout */}
+              {host ? (
+                <>
+                  <li>
+                    <Link href="/host/dashboard" className="text-lg text-white">
+                      Dashboard
                     </Link>
                   </li>
-                );
-              })}
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="text-lg text-black cursor-pointer bg-white px-6 font-semibold py-2 rounded-md hover:bg-gray-200 transition"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                // If logged out -> Login
+                <li>
+                  <Link
+                    href="/vendors/login"
+                    className="text-lg text-black bg-white px-6 font-semibold py-2 rounded-md hover:bg-gray-200 transition"
+                  >
+                    Login
+                  </Link>
+                </li>
+              )}
             </ul>
 
             {/* Hamburger menu toggle (mobile only) */}
@@ -177,29 +236,62 @@ export default function Navbar() {
                       transition: { staggerChildren: 0.1 },
                     },
                     exit: {
-                      transition: { staggerChildren: 0.08, staggerDirection: -1 },
+                      transition: {
+                        staggerChildren: 0.08,
+                        staggerDirection: -1,
+                      },
                     },
                   }}
                 >
-                  {navItems.map(({ label, href }) => (
-                    <motion.div
-                      key={href}
-                      variants={{
-                        hidden: { x: 80, scale: 1.05, opacity: 0 },
-                        visible: { x: 0, scale: 1, opacity: 1 },
-                        exit: { x: 80, scale: 1.05, opacity: 0 },
-                      }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                  {/* Always show Events */}
+                  <Link
+                    href="/events"
+                    onClick={() => setIsOpen(false)}
+                    className="text-4xl font-extrabold uppercase text-white"
+                  >
+                    Events
+                  </Link>
+
+                  {/* Show Vendors only if host logged in */}
+                  {host && (
+                    <Link
+                      href="/vendors"
+                      onClick={() => setIsOpen(false)}
+                      className="text-4xl font-extrabold uppercase text-white"
                     >
+                      Vendors
+                    </Link>
+                  )}
+
+                  {/* Mobile: show Dashboard + Logout if logged in, otherwise Login */}
+                  {host ? (
+                    <>
                       <Link
-                        href={href}
+                        href="/host/dashboard"
                         onClick={() => setIsOpen(false)}
                         className="text-4xl font-extrabold uppercase text-white"
                       >
-                        {label}
+                        Dashboard
                       </Link>
-                    </motion.div>
-                  ))}
+                      <button
+                        onClick={() => {
+                          setIsOpen(false);
+                          handleLogout();
+                        }}
+                        className="text-4xl font-extrabold uppercase text-red-400"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/vendors/login"
+                      onClick={() => setIsOpen(false)}
+                      className="text-4xl font-extrabold uppercase text-white"
+                    >
+                      Login
+                    </Link>
+                  )}
                 </motion.div>
               </motion.div>
             )}

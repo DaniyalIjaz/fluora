@@ -31,7 +31,7 @@ export default function VendorLogin() {
     if (error) {
       toast.error("Login failed: " + error.message);
     } else {
-      toast.success("Login successful 🎉");
+      toast.success("Login successful !");
       setTimeout(() => router.push("/vendors/profile"), 1200);
     }
     setLoading(false);
@@ -91,7 +91,7 @@ export default function VendorLogin() {
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-200 hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black cursor-pointer"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
@@ -107,7 +107,7 @@ export default function VendorLogin() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="bg-white hover:bg-gray-200 text-black transition-colors px-4 py-3 rounded-lg font-semibold shadow-md"
+            className="bg-white hover:bg-gray-200 text-black transition-colors px-4 py-3 rounded-lg font-semibold shadow-md cursor-pointer"
           >
             {loading ? "Please wait..." : "Login"}
           </button>
@@ -116,7 +116,7 @@ export default function VendorLogin() {
             Don’t have an account?{" "}
             <button
               onClick={goToSignup}
-              className="text-blue-400 hover:underline font-semibold cursor-pointer"
+              className="text-white hover:underline font-semibold cursor-pointer"
             >
               Sign Up
             </button>
