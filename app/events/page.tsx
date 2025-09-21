@@ -1,99 +1,231 @@
-"use client"
+"use client";
+import React from "react";
+import CardSwap, { Card } from "../../components/ui/CardSwap";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import DomeGallery from "@/components/ui/DomeGallery";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useInView } from "react-intersection-observer";
 
-type Event = {
-  id: string
-  title: string
-  description: string
-  date: string
-  location: string
-  status: "draft" | "published" | "completed"
-  host: string
-}
-
-const mockEvents: Event[] = [
+const events = [
   {
-    id: "1",
-    title: "Alex & Jordan’s Wedding",
-    description: "Elegant wedding ceremony at Lakeside Garden.",
-    date: "2025-10-12",
-    location: "Lakeside Garden",
-    status: "published",
-    host: "Alex & Jordan",
+    title: "Wedding Ceremony",
+    description: "A beautiful wedding event with floral decor and stage setup.",
+    image: "/images/events/1.jpg",
   },
   {
-    id: "2",
-    title: "Corporate Gala Dinner",
-    description: "Annual corporate dinner with live band and catering.",
-    date: "2025-11-05",
-    location: "Downtown Hotel",
-    status: "published",
-    host: "FutureTech Ltd",
+    title: "Corporate Event",
+    description: "Professional corporate setup with stage, screens, and seating.",
+    image: "/images/events/2.jpg",
   },
   {
-    id: "3",
-    title: "Birthday Bash for Riley",
-    description: "Colorful outdoor birthday party for kids.",
-    date: "2025-09-25",
-    location: "City Park",
-    status: "draft",
-    host: "Riley’s Family",
+    title: "Birthday Party",
+    description: "Fun-filled birthday event with balloons, cake, and music.",
+    image: "/images/events/3.jpg",
   },
-]
+  {
+    title: "Sound System & DJ",
+    description: "Energetic DJ party with professional sound and lighting.",
+    image: "/images/events/4.jpg",
+  },
+  {
+    title: "Photography",
+    description: "Capturing beautiful memories with professional photography.",
+    image: "/images/events/5.jpg",
+  },
+];
 
-export default function EventsPage() {
-  const [search, setSearch] = useState("")
+const happeningEvents = [
+  {
+    name: "Music Festival",
+    date: "25th Sept 2025",
+    location: "Lahore Expo Center",
+    description:
+      "A night full of music and energy with top DJs and artists performing live.",
+  },
+  {
+    name: "Wedding Expo",
+    date: "10th Oct 2025",
+    location: "Karachi Marriott",
+    description:
+      "Meet top wedding planners, decorators, and vendors all in one place.",
+  },
+  {
+    name: "Corporate Meetup",
+    date: "20th Nov 2025",
+    location: "Islamabad Serena Hotel",
+    description:
+      "Networking event for professionals with keynote speakers and workshops.",
+  },
+];
 
-  const filtered = mockEvents.filter((event) =>
-    event.title.toLowerCase().includes(search.toLowerCase())
-  )
+
+const Page = () => {
+
+
+   const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.2, // trigger when 20% is visible
+  });
+
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#021526] via-[#03346E] to-[#021526] text-white">
-      <div className="container mx-auto px-6 py-12">
-        {/* Header */}
-        <h1 className="text-3xl font-bold mb-6">Explore Events</h1>
+    <div className="bg-gradient-to-b from-[#021526] via-[#03346E] to-[#021526] text-white overflow-hidden">
+      {/* 🎉 Featured Event Section */}
+      <div className="pt-36 pb-48 px-6 max-w-7xl mx-auto grid md:grid-cols-2 items-center gap-12">
+        {/* Animated Text Left */}
+        <motion.div
+          initial={{ opacity: 0, x: -60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="space-y-6"
+        >
+          <motion.h2
+            className="text-4xl font-bold leading-tight"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Experience Unforgettable Events
+          </motion.h2>
+          <motion.p
+            className="text-lg opacity-80 max-w-md"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            From weddings to corporate meetups and live concerts, our platform
+            connects you with trusted vendors and planners to make every event
+            extraordinary.
+          </motion.p>
+        </motion.div>
 
-        {/* Search */}
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full p-3 mb-8 rounded-xl text-black focus:ring-2 focus:ring-blue-400"
-        />
+        {/* Swipeable Event Cards Right */}
+        <motion.div
+          style={{  position: "relative" }}
+          className="relative -ml-10 md:-ml-20 h-[270px] md:h-[570px]"
+          initial={{ opacity: 0, x: 60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          <CardSwap
+            cardDistance={60}
+            verticalDistance={70}
+            delay={5000}
+            pauseOnHover={true}
+          >
+            {events.map((event, idx) => (
+              <Card key={idx}>
+                <motion.div
+                  className="flex flex-col items-center text-center"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: idx * 0.15 }}
+                >
+                  <div className="relative w-96 h-80 rounded-lg overflow-hidden shadow-lg mb-4">
+                    <Image
+                      src={event.image}
+                      alt={event.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold">{event.title}</h3>
+                  <p className="text-sm mt-2 opacity-80">
+                    {event.description}
+                  </p>
+                </motion.div>
+              </Card>
+            ))}
+          </CardSwap>
+        </motion.div>
+      </div>
+      
+      
 
-        {/* Event Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((event) => (
+
+{/* Dome Gallery  */}
+
+  <div
+      style={{ width: "100vw" }}
+      className="flex flex-col items-center justify-center md:py-16 h-[100vh] md:h-[150vh]"
+    >
+      {/* Animated Heading + Paragraph */}
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 50 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="text-center max-w-3xl"
+      >
+        <h2 className="text-4xl md:text-5xl font-bold py-10">
+         Events Gallery
+        </h2>
+        <p className="text-lg md:text-xl text-gray-400">
+          Explore moments captured from our past events — bringing people,
+          creativity, and unforgettable experiences together.
+        </p>
+      </motion.div>
+        <DomeGallery />
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {/* 🎤 Happening Events Section */}
+      <motion.div
+        className="pb-40 px-6 max-w-6xl mx-auto"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <motion.h2
+          className="text-center text-3xl font-bold mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          Happening Events
+        </motion.h2>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {happeningEvents.map((event, idx) => (
             <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-md border border-white/20"
+              key={idx}
+              className="bg-white/10 backdrop-blur-lg p-6 rounded-xl shadow-lg hover:scale-105 transition-transform duration-500"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: idx * 0.2 }}
+              viewport={{ once: true }}
             >
-              <h2 className="text-xl font-semibold">{event.title}</h2>
-              <p className="text-sm text-gray-200 mb-3">{event.description}</p>
-              <p className="text-sm">📍 {event.location}</p>
-              <p className="text-sm">📅 {event.date}</p>
-              <span
-                className={`inline-block mt-3 px-3 py-1 text-xs rounded-full ${
-                  event.status === "published"
-                    ? "bg-green-500/80"
-                    : event.status === "draft"
-                    ? "bg-yellow-500/80"
-                    : "bg-blue-500/80"
-                }`}
-              >
-                {event.status}
-              </span>
+              <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
+              <p className="text-sm opacity-80">{event.date}</p>
+              <p className="text-sm opacity-80 mb-4">{event.location}</p>
+              <p className="text-sm">{event.description}</p>
             </motion.div>
           ))}
         </div>
-      </div>
+
+      </motion.div>
+       
     </div>
-  )
-}
+  );
+};
+
+export default Page;

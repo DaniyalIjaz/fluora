@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 import Ballpit from "../ui/Ballpit";
 import SplitText from "../ui/SplitText";
-import Navbar from "../Navbar/page";
+// import Navbar from "../Navbar/page";
 
 export default function Homepage(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,21 +35,6 @@ export default function Homepage(): JSX.Element {
     setLoading(true);
     setSuccess(false);
 
-    // try {
-    //   const supabase = createClient();
-    //   const { error } = await supabase.from("users").insert([{ email }]);
-
-    //   if (error) {
-    //     console.error("Error saving email:", error.message);
-    //   } else {
-    //     setSuccess(true);
-    //     setEmail("");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    // } finally {
-    //   setLoading(false);
-    // }
   };
 
   const handleAnimationComplete = () => {
@@ -66,10 +51,10 @@ export default function Homepage(): JSX.Element {
             "linear-gradient(to bottom, #021526, #03346E, #021526)",
         }}
       >
-        <div className=" relative z-20 ">
+        {/* <div className=" relative z-20 ">
 
           <Navbar />
-        </div>
+        </div> */}
         {/* Decorative animated layers */}
         <div className="absolute inset-0 pointer-events-none">
           <Ballpit
